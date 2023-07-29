@@ -7,3 +7,6 @@
     $ source myenv/bin/activate
     $ pip install package_name
     $ deactivate
+
+
+### "-e ." in requirements.txt will ensure that setup.py is automatically invoked when requirements is run
