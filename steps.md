@@ -1,3 +1,11 @@
+## main steps:
+1. github repo
+2. setup.py
+3. requirements.txt
+
+
+
+
 
 
 ## how i created the virtual environment?
