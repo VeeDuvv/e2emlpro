@@ -5,13 +5,14 @@ from src.logger import logging
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from dataclasses import dataclass
+from data_transformation import DataTransformation
 
 @dataclass
 class DataIngestionConfig:
     """
     Data Ingestion Configuration
     """
-    train_data_path: str=os.path.join(os.getcwd(), "artifacts", "train.csv") # train data path
+    train_data_path: str=os.path.join("artifacts", "train.csv") # train data path
     test_data_path: str=os.path.join("artifacts", "test.csv") # test data path
     raw_data_path: str=os.path.join("artifacts", "raw.csv") # raw data path
 
@@ -31,7 +32,6 @@ class DataIngestion:
         """
         try:
             logging.info("Initiating data ingestion")
-            logging.info(os.getcwd())
             df = pd.read_csv('notebook/data/students.csv')
             
             # df = pd.read_csv(self.ingestion_config.raw_data_path)
@@ -47,7 +47,7 @@ class DataIngestion:
             test_df.to_csv(self.ingestion_config.test_data_path, index=False, header=True) # save the test data file in the artifacts folder as test.csv file
             logging.info("train test split completed")
 
-            return (self.ingestion_config.train_data_path, self.ingestion_config.test_data_path, self.ingestion_config.raw_data_path) 
+            return (self.ingestion_config.train_data_path, self.ingestion_config.test_data_path) 
 
         except Exception as e:
             logging.error("Error while initiating data ingestion")
@@ -57,7 +57,15 @@ class DataIngestion:
 if __name__ == "__main__": 
     try:
         data_ingestion = DataIngestion(DataIngestionConfig())
-        data_ingestion.initiate_data_ingestion()
+        logging.info("Getting train and test data")
+        train_data, test_data = data_ingestion.initiate_data_ingestion()
+
+        logging.info("Doing data transformation")
+        data_transformation = DataTransformation()
+        
+        data_transformation.initiate_data_transformation(train_data, test_data)
+        logging.info("Data transformation done successfully")
+        
     except Exception as e:
         logging.error("Error while initiating data ingestion")
         raise CustomException(e, sys.exc_info())
