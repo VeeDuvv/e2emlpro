@@ -11,15 +11,19 @@ from sklearn.model_selection import GridSearchCV
 from src.exception import CustomException
 from src.logger import logging
 
+def load_object(file_path):
+    try:
+        with open(file_path, "rb") as file_obj:
+            return pickle.load(file_obj)
+    except Exception as e:
+        raise CustomException(e, sys)
+
 def save_object(file_path, obj):
     try:
         dir_path = os.path.dirname(file_path)
         os.makedirs(dir_path, exist_ok=True)
         with open(file_path, "wb") as file_obj:
             pickle.dump(obj, file_obj)
-            # a pickle file is a binary file that contains the serialized version of the object. 
-            # a serialized object is a byte stream that contains the object's data and enough information to reconstruct the object in memory
-
     except Exception as e:
         raise CustomException(e, sys)
     
