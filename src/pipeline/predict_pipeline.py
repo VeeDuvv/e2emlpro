@@ -32,5 +32,5 @@ class CustomData:
         self.reading_score = reading_score
         self.writing_score = writing_score
 
-    def get_data_as_frame(self):
+    def get_data_as_data_frame(self):
         return pd.DataFrame([vars(self)])
