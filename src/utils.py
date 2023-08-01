@@ -23,7 +23,7 @@ def save_object(file_path, obj):
     except Exception as e:
         raise CustomException(e, sys)
     
-def evaluate_models(X_train, y_train, X_test, y_test, models):
+def evaluate_models(X_train, y_train, X_test, y_test, models, params):
     '''
     Evaluate the model
     '''
@@ -31,7 +31,16 @@ def evaluate_models(X_train, y_train, X_test, y_test, models):
         report = {}
         for i in range(len(list(models.keys()))):
             model_name = list(models.keys())[i]
+            param = params[model_name]
             model = list(models.values())[i]
+            # GridSearchCV is a method to find the best parameters for a model. 
+            # It does this by fitting the model multiple times on the provided dataset with different parameter values. 
+            # Its parameters are:   estimator: the model we want to fit, param_grid: the dictionary of parameters we want to optimize, 
+            # cv: the number of folds we want to use for cross validation
+            gs = GridSearchCV(model,param,cv=3) 
+            gs.fit(X_train,y_train)
+            model.set_params(**gs.best_params_)
+            
             model.fit(X_train, y_train)
             y_pred = model.predict(X_test)
             report[model_name] = r2_score(y_test, y_pred)
