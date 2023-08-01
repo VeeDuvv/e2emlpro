@@ -9,6 +9,7 @@ from sklearn.metrics import r2_score
 from sklearn.model_selection import GridSearchCV
 
 from src.exception import CustomException
+from src.logger import logging
 
 def save_object(file_path, obj):
     try:
@@ -34,6 +35,7 @@ def evaluate_models(X_train, y_train, X_test, y_test, models):
             model.fit(X_train, y_train)
             y_pred = model.predict(X_test)
             report[model_name] = r2_score(y_test, y_pred)
+            logging.info(f"Model: {model_name}, R2 Score: {report[model_name]}")
     except Exception as e:
         raise CustomException(e, sys)
     return report

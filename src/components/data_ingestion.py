@@ -6,6 +6,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from dataclasses import dataclass
 from data_transformation import DataTransformation
+from model_trainer import ModelTrainer
 
 @dataclass
 class DataIngestionConfig:
@@ -57,15 +58,19 @@ class DataIngestion:
 if __name__ == "__main__": 
     try:
         data_ingestion = DataIngestion(DataIngestionConfig())
-        logging.info("Getting train and test data")
-        train_data, test_data = data_ingestion.initiate_data_ingestion()
+        logging.info("Getting train and test data paths")
+        train_data_path, test_data_path = data_ingestion.initiate_data_ingestion()
 
         logging.info("Doing data transformation")
         data_transformation = DataTransformation()
-        
-        data_transformation.initiate_data_transformation(train_data, test_data)
+        train_arr, test_arr, _ = data_transformation.initiate_data_transformation(train_data_path, test_data_path)
         logging.info("Data transformation done successfully")
-        
+
+        model_trainer = ModelTrainer()
+        logging.info("Initiating model training")
+        model_trainer.initiate_model_trainer(train_arr, test_arr)
+        logging.info("Model training done successfully")
+
     except Exception as e:
         logging.error("Error while initiating data ingestion")
         raise CustomException(e, sys.exc_info())

@@ -23,13 +23,16 @@ class ModelTrainer:
     def __init__(self):
         self.model_trainer_config = ModelTrainerConfig()
 
-    def initiate_model_trainer(self, train_arr, test_arr, preprocessor_path):
+    def initiate_model_trainer(self, train_arr, test_arr):
         try:
             logging.info("Initiating model training - splitting training data into features and target")
-            X_train = train_arr[:, :-1]
-            y_train = train_arr[:, -1]
-            X_test = test_arr[:, :-1]
-            y_test = test_arr[:, -1]
+            
+            X_train,y_train,X_test,y_test=(
+                train_arr[:,:-1],
+                train_arr[:,-1],
+                test_arr[:,:-1],
+                test_arr[:,-1]
+            )
 
             models = {
                 "Linear Regression": LinearRegression(),
@@ -44,15 +47,20 @@ class ModelTrainer:
             }
             logging.info("Calling evaluate models function")
             model_report:dict=evaluate_models(X_train, y_train, X_test, y_test, models)
-            logging.info("Evaluate models function completed... the best model is...")
-            best_model = model_report["model_name"][model_report["r2_score"].argmax()]
-
-            if model_report{"r2_score"}.max() < 0.8:
+            # from a dictionary, find the key corresponding to the maximum value
+            best_model = max(model_report, key=model_report.get)
+            best_model_r2 = model_report[best_model]
+            logging.info("Evaluate models function completed...")
+            logging.info(f"Best model is: {best_model} with r2 score: {best_model_r2}")
+            
+            if best_model_r2 < 0.8:
                 logging.info("Best model has r2 score less than 0.8, hence not saving the model")
                 return
             logging.info("Saving the best model")
-            save_object(file_path=self.model_trainer_config.trained_model_file_path, model=models[best_model], preprocessor_path=preprocessor_path)
+            save_object(file_path=self.model_trainer_config.trained_model_file_path, obj=models[best_model])
             logging.info("Model saved successfully")
+
+
         except Exception as e:
             logging.error("Error while initiating model training")
             raise CustomException(e, sys.exc_info())
